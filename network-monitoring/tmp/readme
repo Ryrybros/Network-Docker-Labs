@@ -1,0 +1,5 @@
+#inside container :
+
+dnf install -y net-snmp-utils
+
+snmpwalk -v 2c -c public snmp-agent .1.3.6.1.2.1.1.1

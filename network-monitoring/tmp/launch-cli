@@ -1,0 +1,2 @@
+podman run -it --rm --net snmp-network docker.io/almalinux:9 bash
+

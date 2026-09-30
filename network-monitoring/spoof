@@ -1,0 +1,1 @@
+podman run --replace  -d   --name machine-a   --net snmp-network   -p 1161:161/udp   -v ./snmpd.conf:/etc/snmp/snmpd.conf:z   docker.io/almalinux:9   sh -c "dnf install -y net-snmp && echo 'sysname 04f438e24b56 ' >> /etc/snmp/snmpd.conf  && snmpd -f -Lo -C -c /etc/snmp/snmpd.conf" 

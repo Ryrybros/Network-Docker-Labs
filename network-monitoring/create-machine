@@ -1,0 +1,6 @@
+podman run --replace  -d   --name machine-a   --net snmp-network   -p 1161:161/udp   -v ./snmpd.conf:/etc/snmp/snmpd.conf:z   docker.io/almalinux:9   sh -c "dnf install -y net-snmp && echo 'sysname M-A ' >> /etc/snmp/snmpd.conf  && snmpd -f -Lo -C -c /etc/snmp/snmpd.conf"
+
+
+podman run --replace  -d   --name machine-b   --net snmp-network   -p 1162:161/udp   -v ./snmpd.conf:/etc/snmp/snmpd.conf:z   docker.io/almalinux:9   sh -c "dnf install -y net-snmp && echo 'sysname M-B ' >> /etc/snmp/snmpd.conf  && snmpd -f -Lo -C -c /etc/snmp/snmpd.conf"
+
+podman run --replace  -d   --name machine-c   --net snmp-network   -p 1163:161/udp   -v ./snmpd.conf:/etc/snmp/snmpd.conf:z   docker.io/almalinux:9   sh -c "dnf install -y net-snmp && echo 'sysname M-C ' >> /etc/snmp/snmpd.conf  && snmpd -f -Lo -C -c /etc/snmp/snmpd.conf"
