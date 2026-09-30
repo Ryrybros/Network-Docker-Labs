@@ -1,0 +1,6 @@
+echo "Back"
+podman network inspect sim-back-network --format '{{ range .Subnets }}Subnet: {{ .Subnet }}, Gateway: {{ .Gateway }}{{ end }}'
+echo "Front"
+podman network inspect sim-front-network --format '{{ range .Subnets }}Subnet: {{ .Subnet }}, Gateway: {{ .Gateway }}{{ end }}'
+echo "Third"
+podman network inspect sim-third-network --format '{{ range .Subnets }}Subnet: {{ .Subnet }}, Gateway: {{ .Gateway }}{{ end }}'

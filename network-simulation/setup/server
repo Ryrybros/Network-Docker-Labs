@@ -1,0 +1,15 @@
+podman network create \
+  --subnet 192.168.52.0/24 \
+  --gateway 192.168.52.1 \
+  sim-back-network
+
+
+podman network create \
+  --subnet 192.168.53.0/24 \
+  --gateway 192.168.53.1 \
+  sim-front-network
+
+podman network create \
+  --subnet 192.168.54.0/24 \
+  --gateway 192.168.54.1 \
+  sim-third-network

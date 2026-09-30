@@ -1,0 +1,8 @@
+echo "Back"
+podman inspect $(podman ps -q -f network=sim-back-network) --format '{"name": "{{.Name}}", "ip": "{{with index .NetworkSettings.Networks "sim-back-network"}}{{.IPAddress}}{{end}}"}'
+
+echo "Front"
+podman inspect $(podman ps -q -f network=sim-front-network) --format '{"name": "{{.Name}}", "ip": "{{with index .NetworkSettings.Networks "sim-front-network"}}{{.IPAddress}}{{end}}"}'
+
+echo "Third"
+podman inspect $(podman ps -q -f network=sim-third-network) --format '{"name": "{{.Name}}", "ip": "{{with index .NetworkSettings.Networks "sim-third-network"}}{{.IPAddress}}{{end}}"}'

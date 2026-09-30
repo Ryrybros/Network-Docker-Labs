@@ -1,0 +1,4 @@
+podman network rm sim-back-network
+podman network rm sim-front-network
+podman network rm  sim-third-network
+

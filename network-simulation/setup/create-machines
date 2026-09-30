@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Lance le conteneur admin dans un nouveau terminal
+gnome-terminal -- bash -c "podman run -it --rm --name admin --net sim-back-network docker.io/almalinux:9 bash"
+
+# Lance le conteneur client dans un deuxième terminal
+gnome-terminal -- bash -c "podman run -it --rm --name client --net sim-front-network docker.io/almalinux:9 bash"
+
+# Lance le conteneur client2 dans un troisième terminal
+gnome-terminal -- bash -c "podman run -it --rm --name client2 --net sim-third-network docker.io/almalinux:9 bash"
+
