@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Enable packet forwarding inside the router container
+podman exec firewall-router sysctl -w net.ipv4.ip_forward=1
+
+# 1. Flush existing FORWARD rules to ensure a clean slate
+podman exec firewall-router iptables -F FORWARD
+
+# 2. ALWAYS place this first: Allow return traffic for established connections
+# This allows 53 to respond to requests initiated by 52 or 54
+podman exec firewall-router iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# 3. Allow subnet 52 to initiate new connections to subnet 53 and 54
+podman exec firewall-router iptables -A FORWARD -s 192.168.52.0/24 -d 192.168.53.0/24 -m conntrack --ctstate NEW -j ACCEPT
+
+podman exec firewall-router iptables -A FORWARD -s 192.168.52.0/24 -d 192.168.54.0/24 -m conntrack --ctstate NEW -j ACCEPT
+
+# 4. Allow subnet 54 to initiate new connections to subnet 53
+podman exec firewall-router iptables -A FORWARD -s 192.168.54.0/24 -d 192.168.53.0/24 -m conntrack --ctstate NEW -j ACCEPT
+
+# 5. Explicitly block subnet 53 from initiating ANY outgoing connections
+podman exec firewall-router iptables -A FORWARD -s 192.168.53.0/24 -j DROP
+#
+# 6. Block all other traffic (e.g. 54 <--> 52 direct traffic)
+podman exec firewall-router iptables -A FORWARD -s 192.168.54.0/24 -d 192.168.52.0/24 -j DROP
+#
+#podman exec firewall-router iptables -A FORWARD -s 192.168.52.0/24 -d 192.168.54.0/24 -j DROP

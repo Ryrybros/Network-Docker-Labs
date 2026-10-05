@@ -1,0 +1,15 @@
+podman build -t almalinux-firewall -f Dockerfile.firewall config/
+
+
+# 1. Run firewall connected to sim-front-network
+podman run -d --name firewall-router \
+  --privileged \
+  --net sim-front-network \
+  --ip 192.168.53.254 \
+  almalinux-firewall sleep infinity
+
+# 2. Connect to sim-back-network
+podman network connect --ip 192.168.52.254 sim-back-network firewall-router
+
+# 3. Connect to sim-third-network
+podman network connect --ip 192.168.54.254 sim-third-network firewall-router

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+
+# Back
+gnome-terminal -- bash -c "podman run -it --rm --name DB --net=sim-back-network --privileged almalinux-network-tools bash -c '
+ip route del default
+ip route add default via 192.168.52.254
+
+dnf install -y mariadb-server
+
+mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql > /dev/null 2>&1
+mysqld_safe --user=mysql &
+sleep 3
+
+cat << \"EOF\" > /tmp/init.sql
+CREATE DATABASE IF NOT EXISTS app_db;
+USE app_db;
+CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), email VARCHAR(50));
+INSERT INTO users (name, email) VALUES
+(\"Alice Smith\", \"alice@example.com\"),
+(\"Bob Jones\", \"bob@example.com\"),
+(\"Charlie Brown\", \"charlie@example.com\");
+EOF
+
+mysql < /tmp/init.sql
+echo \"=== Database Ready (app_db) ===\"
+exec bash
+'"
+
+
+# Front
+gnome-terminal -- bash -c "podman run -it --rm --name WEB-service --net sim-front-network --privileged almalinux-network-tools bash -c 'ip route del default && ip route add default via 192.168.53.254 && exec bash'"
+
+gnome-terminal -- bash -c "podman run -it --rm --name DNS --net sim-front-network --privileged almalinux-network-tools bash -c 'ip route del default && ip route add default via 192.168.53.254 && exec bash'"
+
+# Third
+gnome-terminal -- bash -c "podman run -it --rm --name accounting --net sim-third-network --privileged almalinux-network-tools bash -c 'ip route del default && ip route add default via 192.168.54.254 && exec bash'"
+
+
