@@ -6,3 +6,7 @@ podman inspect $(podman ps -q -f network=sim-front-network) --format '{"name": "
 
 echo "Third"
 podman inspect $(podman ps -q -f network=sim-third-network) --format '{"name": "{{.Name}}", "ip": "{{with index .NetworkSettings.Networks "sim-third-network"}}{{.IPAddress}}{{end}}"}'
+
+
+echo "interns"
+podman inspect $(podman ps -q -f network=sim-interns-network) --format '{"name": "{{.Name}}", "ip": "{{with index .NetworkSettings.Networks "sim-interns-network"}}{{.IPAddress}}{{end}}"}'

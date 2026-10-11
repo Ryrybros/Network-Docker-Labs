@@ -1,1 +1,1 @@
-podman stop firewall-router && podman rm -f firewall-router
+podman kill firewall-router && podman rm -f firewall-router

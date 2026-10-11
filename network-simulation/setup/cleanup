@@ -1,6 +1,12 @@
 ./config/clean_firewall 
-
+podman kill server-DB
+podman kill server-WEB
+podman kill server-accounting
+#Note that using kill is dirty, I should change Dockerfile and put
+# CMD ["python", "app.py"] apparently
 podman network rm sim-back-network
 podman network rm sim-front-network
 podman network rm  sim-third-network
+podman network rm  sim-interns-network
+podman network rm  sim-extern-network
 

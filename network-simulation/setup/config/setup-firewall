@@ -13,3 +13,9 @@ podman network connect --ip 192.168.52.254 sim-back-network firewall-router
 
 # 3. Connect to sim-third-network
 podman network connect --ip 192.168.54.254 sim-third-network firewall-router
+
+podman network connect --ip 192.168.55.254 sim-interns-network firewall-router
+
+#Connect to internet
+
+podman network connect --ip 192.168.56.254 sim-extern-network firewall-router

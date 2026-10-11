@@ -6,5 +6,6 @@ RUN dnf install -y --allowerasing \
     nftables \
     net-tools \
     procps-ng \
+    tcpdump	\
     && dnf clean all
 CMD ["/sbin/init"]
