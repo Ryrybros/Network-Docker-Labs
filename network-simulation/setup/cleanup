@@ -1,7 +1,9 @@
 ./config/clean_firewall 
+podman kill ext && podman rm -f ext
 podman kill server-DB
 podman kill server-WEB
 podman kill server-accounting
+
 #Note that using kill is dirty, I should change Dockerfile and put
 # CMD ["python", "app.py"] apparently
 podman network rm sim-back-network

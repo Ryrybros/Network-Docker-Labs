@@ -41,6 +41,3 @@
 
 gnome-terminal -- bash -c "podman run -it --rm --name intern --net sim-interns-network --privileged almalinux-network-tools bash -c 'ip route add default via 192.168.55.254 && exec bash'"
 
-#Internet access:
-gnome-terminal -- bash -c "podman run -it --rm --name ext --net sim-extern-network --privileged almalinux-network-tools bash -c 'ip route add default via 192.168.56.254 && exec bash'"
-

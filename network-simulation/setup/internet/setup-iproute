@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# 1. Activer le transfert de paquets (IP Forwarding) dans la machine 56
+podman exec ext sysctl -w net.ipv4.ip_forward=1
+
+# 2. Nettoyer les anciennes règles NAT pour éviter les doublons lors des tests
+podman exec --privileged ext iptables -t nat -F
+
+# 3. Masquer le trafic provenant du réseau 55 lorsqu'il sort vers Internet
+podman exec ext iptables -t nat -A POSTROUTING -s 192.168.55.0/24 -o eth0 -j MASQUERADE
+## Force la machine 56 à masquer aussi l'IP source lorsqu'elle envoie le trafic externe vers le réseau 53
+podman exec --privileged ext iptables -t nat -A POSTROUTING -d 192.168.53.0/24 -j MASQUERADE
+
+# 4. Assurer la route vers la zone 53 via le pare-feu
+podman exec --privileged ext ip route add 192.168.53.0/24 via 192.168.56.254 2>/dev/null
+
+# =====================================================================
+# LES DEUX RÈGLES DE REDIRECTION (DNAT)
+# =====================================================================
+
+# RÈGLE POUR L'EXTÉRIEUR (Résout votre bug actuel) :
+# Intercepte le trafic web externe entrant sur eth0 et le réécrit vers la DB/Accounting
+podman exec --privileged ext iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.53.2
+
+# RÈGLE POUR L'INTÉRIEUR (Déjà présente) :
+# Permet à la machine 56 de tester son propre curl local
+podman exec --privileged ext iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 192.168.53.2
+
+# =====================================================================
+# 5. Autoriser le transit dans le pare-feu local de la machine 56
+# =====================================================================
+podman exec ext iptables -F FORWARD
+podman exec ext iptables -A FORWARD -s 192.168.55.0/24 -j ACCEPT
+podman exec ext iptables -A FORWARD -d 192.168.53.0/24 -j ACCEPT
+podman exec ext iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+
+

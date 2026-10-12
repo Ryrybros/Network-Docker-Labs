@@ -1,0 +1,11 @@
+podman build -t almalinux-firewall -f Dockerfile.firewall config/
+
+
+# 1. Run firewall connected to sim-front-network
+podman run -d --name ext \
+  --privileged \
+  --net sim-extern-network \
+  --ip 192.168.56.2 \
+  almalinux-firewall sleep infinity
+
+

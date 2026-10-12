@@ -1,23 +1,30 @@
 #!/bin/bash
 
-# Enable packet forwarding inside the router container
+# 1. Activer le transfert de paquets inside le pare-feu
 podman exec firewall-router sysctl -w net.ipv4.ip_forward=1
 
-# 1. Flush existing FORWARD rules to ensure a clean slate
+# 2. Configurer la route par défaut vers la machine 56 (192.168.56.2)
+# Utilisation de 'replace' pour écraser proprement une ancienne route par défaut si elle existe
+podman exec firewall-router ip route replace default via 192.168.56.2
+
+# 3. Vider les anciennes règles pour repartir sur une base propre
 podman exec firewall-router iptables -F FORWARD
 
-
-podman exec firewall-router iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-
+# 4. Définir la politique par défaut : TOUT BLOQUER
 podman exec firewall-router iptables -P FORWARD DROP
 
-#Allow new connect from 55
+# 5. RÈGLE PRIORITAIRE : Autoriser le trafic de retour (Réponses pour toutes les sessions ouvertes)
+podman exec firewall-router iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# 6. Autoriser le réseau 55 --> 53 ,52 , 54
 podman exec firewall-router iptables -A FORWARD -s 192.168.55.0/24 -d 192.168.53.0/24 -m conntrack --ctstate NEW -j ACCEPT
-
 podman exec firewall-router iptables -A FORWARD -s 192.168.55.0/24 -d 192.168.52.0/24 -m conntrack --ctstate NEW -j ACCEPT
+podman exec firewall-router iptables -A FORWARD -s 192.168.55.0/24 -d 192.168.54.0/24 -m conntrack --ctstate NEW -j ACCEPT
 
-#Allow internet access for interns
-podman exec firewall-router iptables -A FORWARD -s 192.168.55.0/24 -d 192.168.56.0/24 -m conntrack --ctstate NEW -j ACCEPT
+#Autoriser 56 --> 53 (expose service web)
+podman exec firewall-router iptables -A FORWARD -s 192.168.56.0/24 -d 192.168.53.0/24 -m conntrack --ctstate NEW -j ACCEPT
 
+# 7. CORRECTION INTERNET : Autoriser le réseau 55 à initier de NOUVELLES connexions vers n'importe quelle IP externe
+# On remplace l'IP de destination fixe par 0.0.0.0/0 car la destination finale est le conteneur Internet simulé
+podman exec firewall-router iptables -A FORWARD -s 192.168.55.0/24 -d 0.0.0.0/0 -m conntrack --ctstate NEW -j ACCEPT
 

@@ -1,2 +1,2 @@
-podman exec firewall-router iptables -L FORWARD --line-numbers -nv
+podman exec firewall-router tcpdump -i any -U -w - 2>/dev/null | wireshark -k -i - &
 

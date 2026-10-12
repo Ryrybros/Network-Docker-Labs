@@ -1,6 +1,10 @@
-
+#Internal firewall
 ./config/server
 ./config/setup-firewall
 ./config/setup-iproute
+
+#Internet pass
+./internet/setup-firewall
+./internet/setup-iproute
 
 ./machines/create-machines
